@@ -88,7 +88,7 @@ const helpers = {
     if (config.from) return;
 
     try {
-      const accounts = await interfaceAdapter.getAccounts();
+      const accounts = await interfaceAdapter.getAccounts(config);
       config.networks[config.network].from = accounts[0];
     } catch {
       // don't prevent Truffle from working if user doesn't provide some way

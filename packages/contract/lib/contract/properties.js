@@ -76,6 +76,12 @@ module.exports = {
       this._json.abi = val;
     }
   },
+  initialStorage: function() {
+    return this._json.initialStorage;
+  },
+  michelson: function() {
+    return this._json.michelson;
+  },
   metadata: function () {
     return this._json.metadata;
   },
