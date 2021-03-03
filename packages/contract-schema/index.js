@@ -59,6 +59,9 @@ const sanitizeAllEvents = dirtyEvents =>
   );
 
 var properties = {
+  architecture: {
+    sources: ["architecture"]
+  },
   contractName: {
     sources: ["contractName", "contract_name"]
   },
