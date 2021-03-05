@@ -11,7 +11,8 @@ export interface TezosAdapterOptions {
 export class TezosAdapter implements InterfaceAdapter {
   public tezos: TezosToolkit;
   constructor({ provider }: TezosAdapterOptions) {
-    this.tezos = new TezosToolkit((provider as any).host); // TODO BGC Check string
+    // TODO BGC If network is passed, provider shouldn't be necessary to get the host
+    this.tezos = new TezosToolkit((provider as any).host);
   }
 
   public async getNetworkId() {
@@ -68,6 +69,7 @@ export class TezosAdapter implements InterfaceAdapter {
     const { networks, network } = config;
     let { mnemonic, secretKey } = networks[network];
 
+    // TODO BGC hardcoded private key if none is specified. Confirm this is acceptable
     if (network === "test" && networks.test.develop) {
       secretKey = `edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq`;
     }

@@ -15,6 +15,7 @@ export const createInterfaceAdapter = (
 ): InterfaceAdapter => {
   const { networkType, provider } = options;
 
+  // TODO BGC Change adapters to take config or change them to take current network instead of network_provider
   switch (getNetworkTypeClass(networkType)) {
     case "evm-like": {
       return new Web3InterfaceAdapter({
