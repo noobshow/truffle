@@ -7,7 +7,7 @@ const SUPPORTED_ARCHITECTURES: { [key: string]: (contract: CompiledContract) => 
 };
 
 export function forContract(contract: CompiledContract): any {
-  const contractMapper = SUPPORTED_ARCHITECTURES[contract.architecture];
+  const contractMapper = contract.architecture ? SUPPORTED_ARCHITECTURES[contract.architecture] : forEvmContract;
   if (!contractMapper) throw new Error("Unsupported architecture: " + contract.architecture);
 
   return contractMapper(contract);

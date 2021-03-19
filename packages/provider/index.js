@@ -45,17 +45,18 @@ module.exports = {
   },
 
   testConnection: function (options) {
-    let networkCheckTimeout, networkType;
+    let networkCheckTimeout, networkType, networkConfig;
     const { networks, network } = options;
     if (networks && networks[network]) {
+      networkConfig = networks[network];
       networkCheckTimeout =
-        networks[network].networkCheckTimeout || DEFAULT_NETWORK_CHECK_TIMEOUT;
-      networkType = networks[network].type;
+      networkConfig.networkCheckTimeout || DEFAULT_NETWORK_CHECK_TIMEOUT;
+      networkType = networkConfig.type;
     } else {
       networkCheckTimeout = DEFAULT_NETWORK_CHECK_TIMEOUT;
     }
     const provider = this.getProvider(options);
-    const interfaceAdapter = createInterfaceAdapter({ provider, networkType });
+    const interfaceAdapter = createInterfaceAdapter({ provider, networkType, network: networkConfig });
     return new Promise((resolve, reject) => {
       const noResponseFromNetworkCall = setTimeout(() => {
         const errorMessage =

@@ -43,7 +43,8 @@ const Test = {
 
     const interfaceAdapter = createInterfaceAdapter({
       provider: config.provider,
-      networkType: config.networks[config.network].type
+      networkType: config.networks[config.network].type,
+      network: config.networks[config.network]
     });
 
     // `accounts` will be populated before each contract() invocation

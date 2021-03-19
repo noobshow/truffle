@@ -17,7 +17,8 @@ const Environment = {
 
     const interfaceAdapter = createInterfaceAdapter({
       provider: config.provider,
-      networkType: config.networks[config.network].type
+      networkType: config.networks[config.network].type,
+      network: config.networks[config.network]
     });
 
     await Provider.testConnection(config);
@@ -31,7 +32,8 @@ const Environment = {
 
     const interfaceAdapter = createInterfaceAdapter({
       provider: config.provider,
-      networkType: config.networks[config.network].type
+      networkType: config.networks[config.network].type,
+      network: config.networks[config.network]
     });
 
     let accounts;

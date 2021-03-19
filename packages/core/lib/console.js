@@ -50,7 +50,8 @@ class Console extends EventEmitter {
 
     this.interfaceAdapter = createInterfaceAdapter({
       provider: options.provider,
-      networkType: options.networks[options.network].type
+      networkType: options.networks[options.network].type,
+      network: options.networks[options.network]
     });
     this.web3 = new Web3Shim({
       provider: options.provider,
