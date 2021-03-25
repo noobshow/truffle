@@ -13,10 +13,10 @@ const getNetworkTypeClass = (networkType = "ethereum") => {
 export const createInterfaceAdapter = (
   options: InterfaceAdapterOptions
 ): InterfaceAdapter => {
-  const { networkType, provider, network } = options;
+  const { networkType, provider, network_config } = options;
 
   // TODO BGC Change adapters to take config or change them to take current network instead of network_provider
-  switch (getNetworkTypeClass(networkType)) {
+  switch (getNetworkTypeClass(networkType || network_config.type)) {
     case "evm-like": {
       return new Web3InterfaceAdapter({
         networkType: networkType,
@@ -25,7 +25,7 @@ export const createInterfaceAdapter = (
     }
     case "tezos": {
       return new TezosAdapter({
-        network
+        network_config
       });
     }
     default:

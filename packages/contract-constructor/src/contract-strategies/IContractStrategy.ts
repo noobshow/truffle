@@ -1,6 +1,8 @@
 export interface IContractStrategy {
-  deploy(...args: any[]): Promise<any>;
-  prepareCall(): Promise<any>;
-  sendTransaction(): Promise<any>;
-  call(): Promise<any>;
+  deploy(...args: any[]): any;
+  prepareCall(): any;
+  sendTransaction(): any;
+  call(): any;
+
+  collectMethods(): any[];
 }

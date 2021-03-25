@@ -111,7 +111,7 @@ const Require = {
     const interfaceAdapter = createInterfaceAdapter({
       provider: options.provider,
       networkType: options.networks[options.network].type,
-      network: options.networks[options.network]
+      network_config: options.network_config
     });
     const web3 = new Web3Shim({
       provider: options.provider,

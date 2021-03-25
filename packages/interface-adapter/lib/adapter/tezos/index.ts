@@ -3,14 +3,14 @@ import { TezosToolkit } from "@taquito/taquito";
 import { InMemorySigner, importKey } from '@taquito/signer';
 
 export interface TezosAdapterOptions {
-  network?: any;
+  network_config?: any;
 }
 
 export class TezosAdapter implements InterfaceAdapter {
   public tezos: TezosToolkit;
-  constructor({ network }: TezosAdapterOptions) {
-    this.tezos = new TezosToolkit(network.host);
-    this.setWallet(network);
+  constructor({ network_config }: TezosAdapterOptions) {
+    this.tezos = new TezosToolkit(network_config?.host);
+    this.setWallet(network_config);
   }
 
   public async getNetworkId() {

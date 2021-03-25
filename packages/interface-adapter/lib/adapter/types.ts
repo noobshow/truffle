@@ -24,7 +24,7 @@ export type TxHash = string;
 export type InterfaceAdapterOptions = {
   provider?: Provider;
   networkType?: string;
-  network?: any;
+  network_config?: any;
 };
 
 export interface InterfaceAdapter {

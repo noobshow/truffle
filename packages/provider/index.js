@@ -56,7 +56,7 @@ module.exports = {
       networkCheckTimeout = DEFAULT_NETWORK_CHECK_TIMEOUT;
     }
     const provider = this.getProvider(options);
-    const interfaceAdapter = createInterfaceAdapter({ provider, networkType, network: networkConfig });
+    const interfaceAdapter = createInterfaceAdapter({ provider, networkType, network_config: networkConfig });
     return new Promise((resolve, reject) => {
       const noResponseFromNetworkCall = setTimeout(() => {
         const errorMessage =

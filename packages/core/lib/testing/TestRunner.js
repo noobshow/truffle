@@ -28,7 +28,7 @@ class TestRunner {
     this.interfaceAdapter = createInterfaceAdapter({
       provider: options.provider,
       networkType: options.networks[options.network].type,
-      network: options.networks[options.network]
+      network_config: options.network_config
     });
     this.decoder = null;
 
