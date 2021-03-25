@@ -28,6 +28,10 @@ export class ContractConstructor {
     return this.strategy.deploy(...args);
   }
 
+  public at(address: string) {
+    return this.strategy.at(address);
+  }
+
   public get contract_name(): string {
     return this._json.contractName;
   }

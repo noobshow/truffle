@@ -11,7 +11,7 @@ export class TezosContractStrategy implements IContractStrategy {
   }
 
   // args[0] is storage, args[1] is settings
-  deploy(...args: any[]): Promise<any> {
+  deploy(...args: any[]): Promise<ContractInstance> {
     const promiEvent = Web3PromiEvent();
 
     const michelson: any = JSON.parse(this._json.michelson);
@@ -31,6 +31,19 @@ export class TezosContractStrategy implements IContractStrategy {
       .catch(promiEvent.reject);
 
     return promiEvent.eventEmitter;
+  }
+
+  async at(address: string): Promise<ContractInstance> {
+    if (
+      address == null ||
+      typeof address !== "string" ||
+      address.length !== 36
+    ) {
+      throw new Error(`Invalid address passed to ${this._json.contractName}.at(): ${address}`);
+    }
+
+    const contractInstance = await this.interfaceAdapter.tezos.contract.at(address);
+    return new ContractInstance(this._json, this, contractInstance);
   }
 
   prepareCall(): Promise<any> {
