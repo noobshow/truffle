@@ -1,10 +1,11 @@
 import { ContractInstance } from "../ContractInstance";
+import { TxParams } from "./types";
 
 export interface IContractStrategy {
-  deploy(...args: any[]): Promise<ContractInstance>;
+  deploy(txArguments: any[], txParams: TxParams): Promise<ContractInstance>;
   at(address: string): Promise<ContractInstance>;
 
-  prepareCall(): any;
+  prepareCall(args: any[], isDeploy: boolean): Promise<[any[], { [key: string]: any }]>;
   sendTransaction(): any;
   call(): any;
 
