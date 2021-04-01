@@ -1,8 +1,9 @@
+import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
 import { createInterfaceAdapter, TezosAdapter } from "@truffle/interface-adapter";
 import { IContractStrategy } from "./IContractStrategy";
 import { ContractInstance } from "../ContractInstance";
 import { isTxParams } from "./utils";
-import { TxParams } from "./types";
+import { PrepareCallSettings, TxParams } from "./types";
 const Web3PromiEvent = require("web3-core-promievent");
 
 export class TezosContractStrategy implements IContractStrategy {
@@ -11,21 +12,51 @@ export class TezosContractStrategy implements IContractStrategy {
 
   constructor(private _json: { [key: string]: any }, config: any) {
     this.interfaceAdapter = createInterfaceAdapter(config) as TezosAdapter;
-    this.defaults = {};
+    this.defaults = {}; // TODO BGC Populate defaults with config
+    // ["from", "gas", "gasPrice"].forEach(key => {
+    //   if (config[key]) {
+    //     const obj: any = {};
+    //     obj[key] = config[key];
+    //     contractAbstraction.defaults(obj);
+    //   }
+    // });
   }
 
-  deploy(txArguments: any[], _txParams: TxParams): Promise<ContractInstance> {
+  collectMethods(contractInstance: ContractAbstraction<ContractProvider>): { [key: string]: any; } {
+    const methods: { [key: string]: any; } = {};
+    for (const method in contractInstance.methods) {
+      methods[method] = async (...args: any) => {
+        const [txArguments, _txParams] = await this.prepareCall(args);
+
+        return contractInstance.methods[method](txArguments).send();
+      };
+    }
+    return methods;
+  }
+
+  collectAdditionalProperties(contractInstance: ContractAbstraction<ContractProvider>): { [key: string]: any; } {
+    return {
+      storage: contractInstance.storage.bind(contractInstance),
+      address: contractInstance.address
+    };
+  }
+
+  deploy(txArguments: any[], txParams: TxParams): Promise<ContractInstance> {
     const promiEvent = Web3PromiEvent();
 
     const michelson: any = JSON.parse(this._json.michelson);
 
     const originateParams = {
       code: michelson,
-      storage: txArguments[0]
+      storage: txArguments[0],
+      balance: txParams.value as string | "0",
+      fee: txParams.fee,
+      gasLimit: txParams.gas, // TODO BGC Should we use gasLimit instead?
+      storageLimit: txParams.storageLimit
     };
 
     this.interfaceAdapter.tezos.contract.originate(originateParams)
-      .then((receipt: any) => {
+      .then((receipt) => {
         return receipt.contract();
       })
       .then((contractInstance) => {
@@ -49,7 +80,7 @@ export class TezosContractStrategy implements IContractStrategy {
     return new ContractInstance(this._json, this, contractInstance);
   }
 
-  prepareCall(args: any[], isDeploy: boolean): Promise<[any[], { [key: string]: any }]> {
+  prepareCall(args: any[], settings: PrepareCallSettings = {}): Promise<[any[], { [key: string]: any }]> {
     // TODO BGC Possible validations
     // args.length <= 2, check if storage is valid, check if no storage is provided but needed, etc
 
@@ -62,7 +93,7 @@ export class TezosContractStrategy implements IContractStrategy {
     };
 
     let txArgs: any[];
-    if (isDeploy && isLastArgParams && args.length === 1 && this._json.initialStorage) {
+    if (settings.isDeploy && isLastArgParams && args.length === 1 && this._json.initialStorage) {
       // Deploy only: No initialStorage passed, but there's a default initialStorage
       txArgs = [JSON.parse(this._json.initialStorage)];
     } else if (isLastArgParams) {
@@ -78,14 +109,63 @@ export class TezosContractStrategy implements IContractStrategy {
     ]);
   }
 
-  sendTransaction(): Promise<any> {
+  sendTransaction() {
     throw new Error("Method not implemented.");
   }
-  call(): Promise<any> {
+  call() {
     throw new Error("Method not implemented.");
   }
 
-  collectMethods(): any[] {
-    return [];
+  estimateGas(/*contractInstance: ContractAbstraction<ContractProvider>, txArgs: any[], txParams: { [key: string]: any }*/) {
+    // import { TezosToolkit } from '@taquito/taquito';
+    // const Tezos = new TezosToolkit('https://api.tez.ie/rpc/edonet');
+
+    // Tezos.contract
+    // .at('KT1MZR1g3jZCU6itoyEZ7u91hyJMG2efgmwu')
+    // .then((contract) => {
+    //   const i = 7;
+
+    //   return contract.methods.increment(i).toTransferParams({});
+    // })
+    // .then((op) => {
+    //   println(`Estimating the smart contract call : `);
+    //   return Tezos.estimate.transfer(op);
+    // })
+    // .then((est) => {
+    //   println(`burnFeeMutez : ${est.burnFeeMutez}, 
+    //   gasLimit : ${est.gasLimit}, 
+    //   minimalFeeMutez : ${est.minimalFeeMutez}, 
+    //   storageLimit : ${est.storageLimit}, 
+    //   suggestedFeeMutez : ${est.suggestedFeeMutez}, 
+    //   totalCost : ${est.totalCost}, 
+    //   usingBaseFeeMutez : ${est.usingBaseFeeMutez}`);
+    // })
+    // .catch((error) => console.table(`Error: ${JSON.stringify(error, null, 2)}`));
+  }
+
+  estimateGasNew() {
+    // import { TezosToolkit } from '@taquito/taquito';
+    // const Tezos = new TezosToolkit('https://api.tez.ie/rpc/edonet');
+
+    // println(`Estimating the contract origination : `);
+    // Tezos.estimate
+    //   .originate({
+    //     code: genericMultisigJSONfile,
+    //     storage: {
+    //       stored_counter: 0,
+    //       threshold: 1,
+    //       keys: ['edpkuLxx9PQD8fZ45eUzrK3BhfDZJHhBuK4Zi49DcEGANwd2rpX82t'],
+    //     },
+    //   })
+    //   .then((originationOp) => {
+    //     println(`burnFeeMutez : ${originationOp.burnFeeMutez}, 
+    //     gasLimit : ${originationOp.gasLimit}, 
+    //     minimalFeeMutez : ${originationOp.minimalFeeMutez}, 
+    //     storageLimit : ${originationOp.storageLimit}, 
+    //     suggestedFeeMutez : ${originationOp.suggestedFeeMutez}, 
+    //     totalCost : ${originationOp.totalCost}, 
+    //     usingBaseFeeMutez : ${originationOp.usingBaseFeeMutez}`);
+    //   })
+    //   .catch((error) => println(`Error: ${JSON.stringify(error, null, 2)}`));
   }
 }

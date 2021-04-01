@@ -15,18 +15,10 @@ export class ContractConstructor {
       default:
         throw Error(`Architecture ${this._json.architecture} not supported for contract`);
     }
-
-    // ["from", "gas", "gasPrice"].forEach(key => {
-    //   if (config[key]) {
-    //     const obj: any = {};
-    //     obj[key] = config[key];
-    //     contractAbstraction.defaults(obj);
-    //   }
-    // });
   }
 
   public async new(...args: any[]): Promise<ContractInstance> {
-    const [txArguments, txParams] = await this.strategy.prepareCall(args, true);
+    const [txArguments, txParams] = await this.strategy.prepareCall(args, { isDeploy: true });
 
     return this.strategy.deploy(txArguments, txParams);
   }

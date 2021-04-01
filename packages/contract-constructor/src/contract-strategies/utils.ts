@@ -2,6 +2,7 @@ import web3Utils from "web3-utils";
 
 import { AllowedTxParams } from "./types";
 
+// TODO BGC Export this methods for @truffle/contract
 export function isObject(val: any) {
   return typeof val === "object" && !Array.isArray(val);
 }

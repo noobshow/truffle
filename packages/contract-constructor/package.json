@@ -13,6 +13,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
+    "@taquito/taquito": "^7.2.0-beta.2",
     "@truffle/config": "^1.2.34",
     "web3-core-promievent": "1.2.9",
     "web3-utils": "1.2.9"
